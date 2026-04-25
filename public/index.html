@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bidsmith — Win Upwork jobs by sending the actual work</title>
+    <meta name="description" content="Stop sending AI cover letters. Bidsmith reads the job post and builds the artifact — a working demo, a Loom-style video, a written analysis — and attaches it to your proposal." />
+    <meta property="og:title" content="Bidsmith — Win Upwork jobs by sending the actual work" />
+    <meta property="og:description" content="Every other tool generates a cover letter. Bidsmith generates the demo." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bidsmith" />
+    <meta name="twitter:description" content="Every other tool generates a cover letter. Bidsmith generates the demo." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f5f0e1;
+        --ink: #161513;
+        --muted: #5a554b;
+        --line: #d6cfbd;
+        --panel: #fffdf3;
+        --accent: #b4471f;
+        --accent-soft: #f3e1d4;
+        --green: #1f7a4d;
+        --shadow: 0 18px 60px rgba(20, 16, 8, 0.14);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        line-height: 1.55;
+      }
+      a { color: inherit; }
+      .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+
+      .nav {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 22px 0; gap: 20px;
+      }
+      .brand {
+        display: inline-flex; align-items: center; gap: 10px;
+        text-decoration: none; font-weight: 800; letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        width: 30px; height: 30px; border-radius: 7px;
+        background: var(--ink); color: var(--paper);
+        display: grid; place-items: center;
+        font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      }
+      .nav-links { display: flex; gap: 18px; color: var(--muted); font-size: 14px; }
+      .nav-links a { text-decoration: none; }
+      .nav-links a:hover { color: var(--ink); }
+
+      .hero { padding: 56px 0 30px; }
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 8px;
+        color: var(--accent); font-size: 12px; font-weight: 700;
+        letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px;
+      }
+      .eyebrow::before {
+        content: ""; width: 8px; height: 8px; border-radius: 50%;
+        background: var(--accent);
+      }
+      h1 {
+        margin: 0 0 22px;
+        font-size: clamp(40px, 6.4vw, 76px);
+        line-height: 0.98; font-weight: 820;
+        letter-spacing: -0.02em;
+        max-width: 18ch;
+      }
+      h1 .strike { text-decoration: line-through; text-decoration-thickness: 3px; color: #a89e8a; font-weight: 700; }
+      h1 .accent { color: var(--accent); }
+
+      .lede {
+        max-width: 56ch; font-size: 19px; color: #2c2820;
+        margin: 0 0 28px;
+      }
+
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+      .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        min-height: 44px; padding: 0 18px;
+        border: 1px solid var(--ink); border-radius: 8px;
+        background: var(--ink); color: var(--paper);
+        font-size: 14px; font-weight: 700; text-decoration: none;
+      }
+      .btn.secondary { background: transparent; color: var(--ink); }
+      .btn:hover { transform: translateY(-1px); }
+      .micro { color: var(--muted); font-size: 13px; }
+
+      /* The visual: side-by-side proposals */
+      .compare {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+        margin: 56px 0 0;
+      }
+      .card {
+        background: var(--panel); border: 1px solid var(--line);
+        border-radius: 12px; padding: 22px; box-shadow: var(--shadow);
+        position: relative;
+      }
+      .card .tag {
+        position: absolute; top: -10px; left: 18px;
+        font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
+        text-transform: uppercase; padding: 3px 8px; border-radius: 4px;
+      }
+      .card.bad .tag { background: #efe3d3; color: #6b3f1f; }
+      .card.good .tag { background: var(--ink); color: var(--paper); }
+      .card.bad { opacity: 0.92; }
+      .card.good { border-color: #2a2722; }
+
+      .card h3 {
+        margin: 0 0 4px; font-size: 13px; font-weight: 700;
+        color: var(--muted); letter-spacing: 0.02em;
+      }
+      .card .body {
+        font-family: 'JetBrains Mono', monospace; font-size: 13px;
+        color: #3a3528; line-height: 1.6;
+        background: #fbf6e9; border: 1px dashed var(--line);
+        border-radius: 8px; padding: 14px; margin-top: 10px;
+        min-height: 110px;
+      }
+      .card.bad .body { color: #7a7261; }
+      .card.bad .body::before { content: "Hi, I read your job post carefully. I have 7+ years of experience and I am the perfect fit for this role. I can deliver high-quality results on time and within budget. Looking forward to discussing further."; }
+      .card.good .body::before {
+        content: "Hi — I built a working prototype for the scraper you described. 30-line script, handles the pagination edge case in your spec, runs in 2.4s on 500 pages. ↓ Loom (90s) walking through the code. ↓ The script as a gist.";
+      }
+
+      .attach {
+        display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
+      }
+      .chip {
+        font-size: 12px; padding: 5px 10px; border-radius: 999px;
+        background: #fbf6e9; border: 1px solid var(--line); color: var(--muted);
+      }
+      .chip.live {
+        background: var(--accent-soft); border-color: var(--accent);
+        color: var(--accent); font-weight: 700;
+      }
+      .chip.live::before {
+        content: "●"; color: var(--accent); margin-right: 6px;
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+      @keyframes pulse { 50% { opacity: 0.35; } }
+
+      .section { padding: 56px 0; }
+      .section h2 {
+        margin: 0 0 16px; font-size: 28px; font-weight: 800;
+        letter-spacing: -0.01em; max-width: 22ch;
+      }
+      .section p { margin: 0 0 14px; color: var(--muted); max-width: 62ch; }
+
+      .stat-row {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+        margin: 28px 0 0;
+      }
+      .stat {
+        border: 1px solid var(--line); border-radius: 10px;
+        padding: 18px; background: var(--panel);
+      }
+      .stat .num {
+        font-family: 'JetBrains Mono', monospace; font-size: 32px;
+        font-weight: 700; color: var(--accent); letter-spacing: -0.02em;
+      }
+      .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+      .quote {
+        border-left: 3px solid var(--accent); padding: 6px 0 6px 18px;
+        margin: 22px 0; max-width: 60ch;
+      }
+      .quote p { margin: 0 0 6px; color: #2c2820; font-size: 17px; font-style: italic; }
+      .quote cite { color: var(--muted); font-size: 13px; font-style: normal; }
+
+      .flow {
+        display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+        margin-top: 24px; counter-reset: step;
+      }
+      .step {
+        counter-increment: step;
+        padding: 18px; border: 1px solid var(--line); border-radius: 10px;
+        background: var(--panel);
+      }
+      .step::before {
+        content: counter(step);
+        display: grid; place-items: center;
+        width: 26px; height: 26px; margin-bottom: 10px;
+        border-radius: 50%; background: var(--ink); color: var(--paper);
+        font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
+      }
+      .step h4 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+      .step p { margin: 0; font-size: 13px; color: var(--muted); }
+
+      .vs {
+        margin: 36px 0 0; border-top: 1px solid var(--line); padding-top: 28px;
+      }
+      .vs-row {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px;
+        font-size: 14px; padding: 10px 0; border-bottom: 1px dashed var(--line);
+      }
+      .vs-row:last-child { border-bottom: 0; }
+      .vs-row .them { color: var(--muted); }
+      .vs-row .us { color: var(--ink); font-weight: 600; }
+      .vs-row .us::before {
+        content: "→ "; color: var(--accent); font-weight: 700;
+      }
+
+      .cta {
+        margin: 48px 0 80px;
+        background: var(--ink); color: var(--paper);
+        border-radius: 14px; padding: 40px 28px;
+        text-align: left;
+      }
+      .cta h2 {
+        color: var(--paper); max-width: 24ch; margin: 0 0 12px;
+        font-size: 32px;
+      }
+      .cta p { color: #cfc8b4; max-width: 56ch; margin: 0 0 22px; }
+      .cta .btn {
+        background: var(--paper); color: var(--ink); border-color: var(--paper);
+      }
+      .cta .micro { color: #8e8675; }
+
+      .footer {
+        border-top: 1px solid var(--line); padding: 22px 0 36px;
+        display: flex; justify-content: space-between; gap: 20px;
+        color: var(--muted); font-size: 13px;
+      }
+      .footer a { text-decoration: none; }
+
+      @media (max-width: 760px) {
+        .compare, .flow, .stat-row, .vs-row { grid-template-columns: 1fr; }
+        .hero { padding: 36px 0 10px; }
+        .actions { flex-direction: column; align-items: stretch; }
+        .btn { justify-content: center; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="nav">
+        <a class="brand" href="/">
+          <span class="brand-mark">b</span>
+          <span>Bidsmith</span>
+        </a>
+        <nav class="nav-links">
+          <a href="#how">How</a>
+          <a href="#why">Why now</a>
+          <a href="#waitlist">Waitlist</a>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <div class="eyebrow">For Upwork pros — early access</div>
+        <h1>
+          Stop sending <span class="strike">AI cover letters</span>.
+          Send <span class="accent">the actual work</span>.
+        </h1>
+        <p class="lede">
+          Bidsmith reads the job post and builds the artifact — a working demo, a 90-second
+          Loom, a written spec — then attaches it to your proposal. Clients see the deliverable
+          before they hire, not after.
+        </p>
+        <div class="actions">
+          <a class="btn" href="#waitlist">Join the waitlist</a>
+          <a class="btn secondary" href="#how">See how it works</a>
+        </div>
+
+        <div class="compare" aria-hidden="true">
+          <div class="card bad">
+            <span class="tag">every other tool</span>
+            <h3>Proposal #27 of 39</h3>
+            <div class="body"></div>
+            <div class="attach">
+              <span class="chip">cover letter</span>
+            </div>
+          </div>
+          <div class="card good">
+            <span class="tag">bidsmith</span>
+            <h3>Proposal #4 of 39</h3>
+            <div class="body"></div>
+            <div class="attach">
+              <span class="chip live">demo.loom.com</span>
+              <span class="chip live">scraper.py</span>
+              <span class="chip live">spec.pdf</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="why" class="section">
+        <h2>The cover-letter race is over.</h2>
+        <p>
+          Reply rates on Upwork dropped from ~4% to ~2% as every freelancer started pasting
+          ChatGPT into the proposal box. Clients now scroll past the paragraphs. They open the
+          proposals that look <em>different</em>.
+        </p>
+
+        <div class="stat-row">
+          <div class="stat">
+            <div class="num">2%</div>
+            <div class="lbl">Reply rate after AI flooded proposals (was ~4% in 2023)</div>
+          </div>
+          <div class="stat">
+            <div class="num">39</div>
+            <div class="lbl">Average proposals per popular job — yours is buried</div>
+          </div>
+          <div class="stat">
+            <div class="num">$0.15</div>
+            <div class="lbl">Per connect. A bad proposal still costs you $1.50–$6</div>
+          </div>
+        </div>
+
+        <div class="quote">
+          <p>"Dozens of proposals, zero hires. The result of using UMA AI? Zero replies. Barely a response."</p>
+          <cite>— Freelancer's Hub, Medium</cite>
+        </div>
+        <div class="quote">
+          <p>"The winning proposal was overwhelmingly human. They told me <em>how</em> they'd solve the problem, not how qualified they were."</p>
+          <cite>— Client, The Freelance Balance</cite>
+        </div>
+      </section>
+
+      <section id="how" class="section">
+        <h2>What Bidsmith does instead.</h2>
+        <p>
+          You point Bidsmith at a job. It reads the post, picks the right kind of proof, builds
+          it, and gives you a proposal you can send in one click.
+        </p>
+
+        <div class="flow">
+          <div class="step">
+            <h4>Read the post</h4>
+            <p>Parses the brief, the client's history, and what the top 3 hires on this client looked like.</p>
+          </div>
+          <div class="step">
+            <h4>Pick the proof</h4>
+            <p>Code task → working prototype. Design → concept frame. Strategy → 1-pager.</p>
+          </div>
+          <div class="step">
+            <h4>Build it</h4>
+            <p>Spins up a sandbox, ships a real artifact in 2–6 minutes. Loom voiceover optional.</p>
+          </div>
+          <div class="step">
+            <h4>You hit send</h4>
+            <p>You review. You edit the tone. You send. Bidsmith never auto-submits.</p>
+          </div>
+        </div>
+
+        <div class="vs">
+          <div class="vs-row">
+            <div class="them">Proposal Genie / Upwex / Vollna sell <em>more</em> proposals per month.</div>
+            <div class="us">Bidsmith sells <em>one proposal</em> that includes a $200 deliverable for $0.15 of connects.</div>
+          </div>
+          <div class="vs-row">
+            <div class="them">Auto-bidders fire 50/day, get the same 2% reply rate at scale.</div>
+            <div class="us">Targeted: 5 bids a day, each with proof of work attached.</div>
+          </div>
+          <div class="vs-row">
+            <div class="them">"Personalized" cover letters that ChatGPT detectors flag in 4 lines.</div>
+            <div class="us">An artifact a human had to actually build. The detector is the client opening it.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="waitlist" class="cta">
+        <h2>Closed beta. ~30 freelancers.</h2>
+        <p>
+          We're picking 30 Upwork pros to use Bidsmith on real proposals over 4 weeks. If you
+          spend &gt; $100/month on connects and want artifact-driven proposals, drop your email
+          or DM <a href="https://x.com/KushalSM5" style="color: var(--paper); text-decoration: underline;">@KushalSM5</a>.
+        </p>
+        <a class="btn" href="mailto:kushalsokke@gmail.com?subject=Bidsmith%20beta">Email for access</a>
+        <div class="micro" style="margin-top: 14px;">No credit card. No "be the first" countdown. We're picking based on volume + niche fit.</div>
+      </section>
+
+      <footer class="footer">
+        <div>Bidsmith · built by <a href="https://x.com/KushalSM5">@KushalSM5</a></div>
+        <div><a href="mailto:kushalsokke@gmail.com">kushalsokke@gmail.com</a></div>
+      </footer>
+    </div>
+  </body>
+</html>
