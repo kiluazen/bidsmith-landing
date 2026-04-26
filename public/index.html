@@ -225,6 +225,18 @@
       }
       .cta .micro { color: #8e8675; }
 
+      .contact-form { max-width: 520px; margin: 0; }
+      .contact-row { display: flex; gap: 8px; flex-wrap: wrap; }
+      .contact-row input {
+        flex: 1; min-width: 220px; min-height: 44px; padding: 0 14px;
+        border: 1px solid rgba(245, 240, 225, 0.32); border-radius: 8px;
+        background: rgba(255, 253, 243, 0.08); color: var(--paper);
+        font: inherit; font-size: 15px;
+      }
+      .contact-row input::placeholder { color: rgba(245, 240, 225, 0.45); }
+      .contact-row input:focus { outline: 2px solid rgba(245, 240, 225, 0.45); outline-offset: 2px; }
+      .contact-row button:disabled { opacity: 0.6; cursor: default; }
+
       .footer {
         border-top: 1px solid var(--line); padding: 22px 0 36px;
         display: flex; justify-content: space-between; gap: 20px;
@@ -374,8 +386,13 @@
           spend &gt; $100/month on connects and want artifact-driven proposals, drop your email
           or DM <a href="https://x.com/KushalSM5" style="color: var(--paper); text-decoration: underline;">@KushalSM5</a>.
         </p>
-        <a class="btn" href="mailto:kushalsokke@gmail.com?subject=Bidsmith%20beta">Email for access</a>
-        <div class="micro" style="margin-top: 14px;">No credit card. No "be the first" countdown. We're picking based on volume + niche fit.</div>
+        <form class="contact-form" id="contact-form">
+          <div class="contact-row">
+            <input id="contact-email" name="email" type="email" required placeholder="you@upwork.com" autocomplete="email" />
+            <button class="btn" type="submit">Contact me</button>
+          </div>
+          <div class="micro" id="contact-note" style="margin-top: 14px;">No credit card. No "be the first" countdown. We're picking based on volume + niche fit.</div>
+        </form>
       </section>
 
       <footer class="footer">
@@ -383,5 +400,34 @@
         <div><a href="mailto:kushalsokke@gmail.com">kushalsokke@gmail.com</a></div>
       </footer>
     </div>
+    <script>
+      const CONTACT_URL = "https://script.google.com/macros/s/AKfycbx09f-4aNddxzmVVUStNJwjzVip5u3PqVYN7GSgO83FDz5DqYLEFqy4ysARdZ6oeDo8rA/exec";
+      const PRODUCT = "bidsmith";
+      const cForm = document.getElementById("contact-form");
+      const cNote = document.getElementById("contact-note");
+      cForm && cForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("contact-email").value.trim();
+        if (!email || !email.includes("@")) return;
+        const btn = cForm.querySelector("button");
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Sending…";
+        try {
+          await fetch(CONTACT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ product: PRODUCT, email, source: location.href }),
+          });
+          cForm.reset();
+          cNote.textContent = "Got it — I'll be in touch.";
+          btn.textContent = "Sent ✓";
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = original;
+          cNote.textContent = "Send failed. Email kushalsokke@gmail.com instead.";
+        }
+      });
+    </script>
   </body>
 </html>
