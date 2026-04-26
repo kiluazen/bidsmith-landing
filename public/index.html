@@ -4,27 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bidsmith — Win Upwork jobs by sending the actual work</title>
-    <meta name="description" content="Stop sending AI cover letters. Bidsmith reads the job post and builds the artifact — a working demo, a Loom-style video, a written analysis — and attaches it to your proposal." />
+    <meta name="description" content="Bidsmith turns an Upwork job post into a finished artifact you can attach to the proposal: prototype, analysis, concept, or spec." />
     <meta property="og:title" content="Bidsmith — Win Upwork jobs by sending the actual work" />
-    <meta property="og:description" content="Every other tool generates a cover letter. Bidsmith generates the demo." />
+    <meta property="og:description" content="Send the work, not a promise." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bidsmith" />
-    <meta name="twitter:description" content="Every other tool generates a cover letter. Bidsmith generates the demo." />
+    <meta name="twitter:description" content="Send the work, not a promise." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
       :root {
         color-scheme: light;
-        --paper: #f5f0e1;
-        --ink: #161513;
-        --muted: #5a554b;
-        --line: #d6cfbd;
-        --panel: #fffdf3;
-        --accent: #b4471f;
-        --accent-soft: #f3e1d4;
-        --green: #1f7a4d;
-        --shadow: 0 18px 60px rgba(20, 16, 8, 0.14);
+        --paper: #f3ecda;
+        --paper-2: #ebe2c9;
+        --ink: #14110d;
+        --ink-soft: #2c2820;
+        --muted: #6b6452;
+        --muted-2: #9a937f;
+        --line: #d4ccb6;
+        --panel: #fffcf2;
+        --accent: #b8431e;
+        --accent-2: #d96a3e;
+        --accent-soft: #f4dccc;
+        --gold: #c89a3a;
+        --shadow-sm: 0 4px 14px rgba(20, 16, 8, 0.08);
+        --shadow-md: 0 18px 50px rgba(20, 16, 8, 0.14);
+        --shadow-lg: 0 30px 90px rgba(20, 16, 8, 0.22);
       }
 
       * { box-sizing: border-box; }
@@ -35,371 +42,566 @@
         background: var(--paper);
         color: var(--ink);
         line-height: 1.55;
+        background-image:
+          radial-gradient(ellipse 1200px 600px at 80% -10%, rgba(184, 67, 30, 0.10), transparent 60%),
+          radial-gradient(ellipse 1000px 500px at -10% 30%, rgba(200, 154, 58, 0.10), transparent 60%);
+        background-attachment: fixed;
       }
       a { color: inherit; }
-      .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+      .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
 
+      /* ---------- nav ---------- */
       .nav {
         display: flex; align-items: center; justify-content: space-between;
         padding: 22px 0; gap: 20px;
       }
       .brand {
-        display: inline-flex; align-items: center; gap: 10px;
-        text-decoration: none; font-weight: 800; letter-spacing: -0.01em;
+        display: inline-flex; align-items: center; gap: 12px;
+        text-decoration: none; font-weight: 700;
       }
       .brand-mark {
-        width: 30px; height: 30px; border-radius: 7px;
-        background: var(--ink); color: var(--paper);
+        width: 38px; height: 38px;
         display: grid; place-items: center;
-        font-family: 'JetBrains Mono', monospace; font-weight: 700;
+        position: relative;
       }
-      .nav-links { display: flex; gap: 18px; color: var(--muted); font-size: 14px; }
+      .brand-mark svg { width: 100%; height: 100%; display: block; }
+      .brand-word {
+        font-family: 'Fraunces', serif;
+        font-size: 22px; font-weight: 700;
+        letter-spacing: -0.015em;
+      }
+      .brand-word .smith { color: var(--accent); }
+      .nav-links { display: flex; gap: 22px; color: var(--muted); font-size: 14px; }
       .nav-links a { text-decoration: none; }
       .nav-links a:hover { color: var(--ink); }
 
-      .hero { padding: 56px 0 30px; }
-      .eyebrow {
-        display: inline-flex; align-items: center; gap: 8px;
-        color: var(--accent); font-size: 12px; font-weight: 700;
-        letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px;
+      /* ---------- hero ---------- */
+      .hero {
+        padding: 40px 0 80px;
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 56px;
+        align-items: center;
       }
-      .eyebrow::before {
-        content: ""; width: 8px; height: 8px; border-radius: 50%;
-        background: var(--accent);
-      }
-      h1 {
+      .hero-text { position: relative; }
+      h1.display {
+        font-family: 'Fraunces', serif;
         margin: 0 0 22px;
-        font-size: clamp(40px, 6.4vw, 76px);
-        line-height: 0.98; font-weight: 820;
-        letter-spacing: -0.02em;
-        max-width: 18ch;
+        font-size: clamp(46px, 6.4vw, 84px);
+        line-height: 0.95;
+        font-weight: 900;
+        letter-spacing: -0.025em;
       }
-      h1 .strike { text-decoration: line-through; text-decoration-thickness: 3px; color: #a89e8a; font-weight: 700; }
-      h1 .accent { color: var(--accent); }
+      h1.display .strike {
+        position: relative;
+        color: var(--muted-2);
+        font-weight: 500;
+        font-style: italic;
+      }
+      h1.display .strike::after {
+        content: "";
+        position: absolute; left: -2%; right: -2%;
+        top: 54%; height: 4px;
+        background: var(--accent);
+        transform: rotate(-2deg);
+        border-radius: 2px;
+      }
+      h1.display .accent {
+        color: var(--accent);
+        font-style: normal;
+      }
 
       .lede {
-        max-width: 56ch; font-size: 19px; color: #2c2820;
-        margin: 0 0 28px;
+        max-width: 54ch; font-size: 19px; color: var(--ink-soft);
+        margin: 0 0 32px;
       }
+      .lede strong { font-weight: 600; color: var(--ink); }
 
-      .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+      .proof-list {
+        display: grid;
+        gap: 10px;
+        margin: 0 0 28px;
+        padding: 0;
+        list-style: none;
+        max-width: 540px;
+      }
+      .proof-list li {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        gap: 10px;
+        color: var(--ink-soft);
+        font-size: 17px;
+        align-items: baseline;
+      }
+      .proof-list li::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        margin-top: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
       .btn {
         display: inline-flex; align-items: center; gap: 8px;
-        min-height: 44px; padding: 0 18px;
-        border: 1px solid var(--ink); border-radius: 8px;
+        min-height: 48px; padding: 0 22px;
+        border: 1px solid var(--ink); border-radius: 10px;
         background: var(--ink); color: var(--paper);
-        font-size: 14px; font-weight: 700; text-decoration: none;
+        font-size: 15px; font-weight: 600; text-decoration: none;
+        transition: transform 0.15s, box-shadow 0.15s;
+        box-shadow: var(--shadow-sm);
       }
-      .btn.secondary { background: transparent; color: var(--ink); }
-      .btn:hover { transform: translateY(-1px); }
+      .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+      .btn.secondary {
+        background: transparent; color: var(--ink);
+        border-color: var(--ink); box-shadow: none;
+      }
+      .btn.accent { background: var(--accent); border-color: var(--accent); color: #fff; }
       .micro { color: var(--muted); font-size: 13px; }
 
-      /* The visual: side-by-side proposals */
-      .compare {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-        margin: 56px 0 0;
+      .contact-form {
+        max-width: 560px;
+        margin: 0;
       }
-      .card {
-        background: var(--panel); border: 1px solid var(--line);
-        border-radius: 12px; padding: 22px; box-shadow: var(--shadow);
-        position: relative;
+      .contact-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
       }
-      .card .tag {
-        position: absolute; top: -10px; left: 18px;
-        font-size: 11px; font-weight: 800; letter-spacing: 0.08em;
-        text-transform: uppercase; padding: 3px 8px; border-radius: 4px;
-      }
-      .card.bad .tag { background: #efe3d3; color: #6b3f1f; }
-      .card.good .tag { background: var(--ink); color: var(--paper); }
-      .card.bad { opacity: 0.92; }
-      .card.good { border-color: #2a2722; }
-
-      .card h3 {
-        margin: 0 0 4px; font-size: 13px; font-weight: 700;
-        color: var(--muted); letter-spacing: 0.02em;
-      }
-      .card .body {
-        font-family: 'JetBrains Mono', monospace; font-size: 13px;
-        color: #3a3528; line-height: 1.6;
-        background: #fbf6e9; border: 1px dashed var(--line);
-        border-radius: 8px; padding: 14px; margin-top: 10px;
-        min-height: 110px;
-      }
-      .card.bad .body { color: #7a7261; }
-      .card.bad .body::before { content: "Hi, I read your job post carefully. I have 7+ years of experience and I am the perfect fit for this role. I can deliver high-quality results on time and within budget. Looking forward to discussing further."; }
-      .card.good .body::before {
-        content: "Hi — I built a working prototype for the scraper you described. 30-line script, handles the pagination edge case in your spec, runs in 2.4s on 500 pages. ↓ Loom (90s) walking through the code. ↓ The script as a gist.";
-      }
-
-      .attach {
-        display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
-      }
-      .chip {
-        font-size: 12px; padding: 5px 10px; border-radius: 999px;
-        background: #fbf6e9; border: 1px solid var(--line); color: var(--muted);
-      }
-      .chip.live {
-        background: var(--accent-soft); border-color: var(--accent);
-        color: var(--accent); font-weight: 700;
-      }
-      .chip.live::before {
-        content: "●"; color: var(--accent); margin-right: 6px;
-        animation: pulse 1.6s ease-in-out infinite;
-      }
-      @keyframes pulse { 50% { opacity: 0.35; } }
-
-      .section { padding: 56px 0; }
-      .section h2 {
-        margin: 0 0 16px; font-size: 28px; font-weight: 800;
-        letter-spacing: -0.01em; max-width: 22ch;
-      }
-      .section p { margin: 0 0 14px; color: var(--muted); max-width: 62ch; }
-
-      .stat-row {
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-        margin: 28px 0 0;
-      }
-      .stat {
-        border: 1px solid var(--line); border-radius: 10px;
-        padding: 18px; background: var(--panel);
-      }
-      .stat .num {
-        font-family: 'JetBrains Mono', monospace; font-size: 32px;
-        font-weight: 700; color: var(--accent); letter-spacing: -0.02em;
-      }
-      .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
-
-      .quote {
-        border-left: 3px solid var(--accent); padding: 6px 0 6px 18px;
-        margin: 22px 0; max-width: 60ch;
-      }
-      .quote p { margin: 0 0 6px; color: #2c2820; font-size: 17px; font-style: italic; }
-      .quote cite { color: var(--muted); font-size: 13px; font-style: normal; }
-
-      .flow {
-        display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
-        margin-top: 24px; counter-reset: step;
-      }
-      .step {
-        counter-increment: step;
-        padding: 18px; border: 1px solid var(--line); border-radius: 10px;
-        background: var(--panel);
-      }
-      .step::before {
-        content: counter(step);
-        display: grid; place-items: center;
-        width: 26px; height: 26px; margin-bottom: 10px;
-        border-radius: 50%; background: var(--ink); color: var(--paper);
-        font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700;
-      }
-      .step h4 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
-      .step p { margin: 0; font-size: 13px; color: var(--muted); }
-
-      .vs {
-        margin: 36px 0 0; border-top: 1px solid var(--line); padding-top: 28px;
-      }
-      .vs-row {
-        display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px;
-        font-size: 14px; padding: 10px 0; border-bottom: 1px dashed var(--line);
-      }
-      .vs-row:last-child { border-bottom: 0; }
-      .vs-row .them { color: var(--muted); }
-      .vs-row .us { color: var(--ink); font-weight: 600; }
-      .vs-row .us::before {
-        content: "→ "; color: var(--accent); font-weight: 700;
-      }
-
-      .cta {
-        margin: 48px 0 80px;
-        background: var(--ink); color: var(--paper);
-        border-radius: 14px; padding: 40px 28px;
-        text-align: left;
-      }
-      .cta h2 {
-        color: var(--paper); max-width: 24ch; margin: 0 0 12px;
-        font-size: 32px;
-      }
-      .cta p { color: #cfc8b4; max-width: 56ch; margin: 0 0 22px; }
-      .cta .btn {
-        background: var(--paper); color: var(--ink); border-color: var(--paper);
-      }
-      .cta .micro { color: #8e8675; }
-
-      .contact-form { max-width: 520px; margin: 0; }
-      .contact-row { display: flex; gap: 8px; flex-wrap: wrap; }
       .contact-row input {
-        flex: 1; min-width: 220px; min-height: 44px; padding: 0 14px;
-        border: 1px solid rgba(245, 240, 225, 0.32); border-radius: 8px;
-        background: rgba(255, 253, 243, 0.08); color: var(--paper);
-        font: inherit; font-size: 15px;
+        width: 100%;
+        min-height: 50px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        color: var(--ink);
+        font: inherit;
+        font-size: 15px;
+        box-shadow: var(--shadow-sm);
       }
-      .contact-row input::placeholder { color: rgba(245, 240, 225, 0.45); }
-      .contact-row input:focus { outline: 2px solid rgba(245, 240, 225, 0.45); outline-offset: 2px; }
+      .contact-row input::placeholder { color: var(--muted-2); }
+      .contact-row input:focus {
+        outline: 2px solid rgba(184, 67, 30, 0.42);
+        outline-offset: 2px;
+        border-color: var(--accent);
+      }
       .contact-row button:disabled { opacity: 0.6; cursor: default; }
 
+      /* ---------- HERO VISUAL: proposal stack ---------- */
+      .stack-frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1.05;
+        background: linear-gradient(180deg, var(--paper-2) 0%, var(--paper) 100%);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        padding: 28px;
+      }
+      .stack-frame::before {
+        content: "client view · proposal inbox";
+        position: absolute; top: 14px; left: 18px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px; color: var(--muted-2);
+        letter-spacing: 0.04em;
+      }
+      .stack-frame::after {
+        content: ""; position: absolute; top: 16px; right: 16px;
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--accent); box-shadow: 0 0 0 4px rgba(184, 67, 30, 0.18);
+      }
+
+      .pile {
+        position: absolute; inset: 38px 18px 18px;
+        display: flex; flex-direction: column; gap: 6px;
+        overflow: hidden;
+      }
+      .pile-card {
+        flex: 0 0 auto;
+        background: rgba(255, 252, 242, 0.55);
+        border: 1px solid rgba(212, 204, 182, 0.55);
+        border-radius: 8px;
+        padding: 10px 12px;
+        display: flex; align-items: center; gap: 10px;
+        opacity: 0.55;
+      }
+      .pile-card .av {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: var(--paper-2);
+        flex: 0 0 auto;
+      }
+      .pile-card .lines {
+        flex: 1; display: flex; flex-direction: column; gap: 4px;
+      }
+      .pile-card .ln {
+        height: 5px; border-radius: 2px;
+        background: var(--muted-2); opacity: 0.35;
+      }
+      .pile-card .ln.s { width: 50%; }
+      .pile-card .ln.m { width: 78%; }
+      .pile-card .ln.l { width: 92%; }
+      .pile-card .meta {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9px; color: var(--muted-2);
+        flex: 0 0 auto;
+      }
+
+      /* the highlighted bidsmith card */
+      .pile-card.lit {
+        opacity: 1;
+        background: var(--panel);
+        border: 1.5px solid var(--accent);
+        box-shadow:
+          0 0 0 4px rgba(184, 67, 30, 0.10),
+          0 14px 40px rgba(184, 67, 30, 0.20);
+        padding: 18px 22px;
+        gap: 16px;
+        align-items: flex-start;
+        position: relative;
+        z-index: 2;
+      }
+      .pile-card.lit .av {
+        background: var(--accent);
+        width: 28px; height: 28px;
+        margin-top: 2px;
+      }
+      .pile-card.lit .lines {
+        gap: 8px;
+        padding-right: 8px;
+      }
+      .pile-card.lit .ln {
+        background: var(--ink); opacity: 0.85;
+        height: 6px;
+      }
+      .pile-card.lit .meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 10px;
+        margin-top: 2px;
+      }
+      .pile-card.lit .chips {
+        display: flex; flex-wrap: wrap;
+        gap: 5px; margin-top: 4px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9px;
+      }
+      .pile-card.lit .chip-mini {
+        padding: 3px 8px; border-radius: 999px;
+        background: var(--accent-soft); color: var(--accent);
+        border: 1px solid var(--accent);
+        font-weight: 700;
+      }
+
+      .stack-arrow {
+        background: var(--ink); color: var(--paper);
+        padding: 4px 9px; border-radius: 5px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 9px; font-weight: 700;
+        letter-spacing: 0.06em; text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      /* ---------- section ---------- */
+      .section { padding: 80px 0; }
+      .section.tight { padding: 56px 0; }
+      .section h2 {
+        font-family: 'Fraunces', serif;
+        margin: 0 0 16px;
+        font-size: clamp(32px, 4vw, 44px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        max-width: 22ch;
+        line-height: 1.05;
+      }
+      .section h2 em { color: var(--accent); font-style: normal; }
+      .section .kicker {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px; letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--accent);
+        margin-bottom: 14px;
+      }
+      .section p { margin: 0 0 14px; color: var(--muted); max-width: 64ch; font-size: 16px; }
+
+      /* ---------- flow ---------- */
+      .flow {
+        display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px;
+        margin-top: 36px;
+      }
+      .step {
+        padding: 22px; border: 1px solid var(--line); border-radius: 14px;
+        background: var(--panel); position: relative;
+      }
+      .step .num {
+        font-family: 'Fraunces', serif;
+        font-size: 32px; font-weight: 900; color: var(--accent);
+        line-height: 1; margin-bottom: 12px;
+        letter-spacing: -0.02em;
+      }
+      .step h4 {
+        margin: 0 0 6px; font-size: 15px; font-weight: 700;
+        font-family: Inter, sans-serif;
+      }
+      .step p { margin: 0; font-size: 13px; color: var(--muted); }
+
+      /* ---------- vs ---------- */
+      .vs {
+        margin: 44px 0 0;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .vs-head {
+        display: grid; grid-template-columns: 1fr 1fr;
+        background: var(--paper-2);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px; letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--line);
+      }
+      .vs-head > div { padding: 14px 22px; }
+      .vs-head > div:first-child { color: var(--muted); }
+      .vs-head > div:last-child {
+        color: var(--accent);
+        border-left: 1px solid var(--line);
+      }
+      .vs-row {
+        display: grid; grid-template-columns: 1fr 1fr;
+        font-size: 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      .vs-row:last-child { border-bottom: 0; }
+      .vs-row > div { padding: 18px 22px; }
+      .vs-row .them { color: var(--muted); }
+      .vs-row .us {
+        color: var(--ink); font-weight: 500;
+        background: rgba(184, 67, 30, 0.04);
+        border-left: 1px solid var(--line);
+      }
+      .vs-row .us strong { color: var(--accent); font-weight: 700; }
+
+      /* ---------- footer ---------- */
       .footer {
-        border-top: 1px solid var(--line); padding: 22px 0 36px;
-        display: flex; justify-content: space-between; gap: 20px;
+        border-top: 1px solid var(--line); padding: 28px 0 40px;
+        display: flex; justify-content: flex-start; gap: 20px;
         color: var(--muted); font-size: 13px;
       }
       .footer a { text-decoration: none; }
+      .footer a:hover { color: var(--ink); }
 
-      @media (max-width: 760px) {
-        .compare, .flow, .stat-row, .vs-row { grid-template-columns: 1fr; }
-        .hero { padding: 36px 0 10px; }
-        .actions { flex-direction: column; align-items: stretch; }
+      @keyframes pulse { 50% { opacity: 0.35; } }
+
+      @media (max-width: 920px) {
+        .hero { grid-template-columns: 1fr; gap: 40px; padding: 24px 0 56px; }
+        .stack-frame { aspect-ratio: 1 / 0.9; }
+      }
+      @media (max-width: 820px) {
+        .flow { grid-template-columns: 1fr; }
+        .vs {
+          background: transparent;
+          border: 0;
+          border-radius: 0;
+          overflow: visible;
+        }
+        .vs-head { display: none; }
+        .vs-row {
+          grid-template-columns: 1fr;
+          margin-bottom: 12px;
+          border: 1px solid var(--line);
+          border-radius: 12px;
+          overflow: hidden;
+          background: var(--panel);
+        }
+        .vs-row:last-child {
+          border-bottom: 1px solid var(--line);
+          margin-bottom: 0;
+        }
+        .vs-row > div {
+          padding: 14px 16px 16px;
+        }
+        .vs-row .them::before,
+        .vs-row .us::before {
+          display: block;
+          margin-bottom: 8px;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+        }
+        .vs-row .them::before {
+          content: "usual bid";
+          color: var(--muted);
+        }
+        .vs-row .us {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+          background: rgba(184, 67, 30, 0.06);
+        }
+        .vs-row .us::before {
+          content: "bidsmith";
+          color: var(--accent);
+        }
+        .nav-links { display: none; }
+        .contact-row { grid-template-columns: 1fr; }
         .btn { justify-content: center; }
       }
     </style>
   </head>
   <body>
     <div class="wrap">
+      <!-- ============= NAV ============= -->
       <header class="nav">
         <a class="brand" href="/">
-          <span class="brand-mark">b</span>
-          <span>Bidsmith</span>
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none">
+              <!-- anvil base -->
+              <rect x="6" y="26" width="28" height="6" rx="1.5" fill="#14110d"/>
+              <!-- anvil top -->
+              <path d="M4 18 L36 18 L32 24 L8 24 Z" fill="#14110d"/>
+              <!-- anvil horn -->
+              <path d="M36 18 Q40 18 38 22 L34 22 Z" fill="#14110d"/>
+              <!-- spark / hammer strike -->
+              <circle cx="20" cy="11" r="2.5" fill="#b8431e"/>
+              <path d="M20 5 L20 8 M16 7 L18 9 M24 7 L22 9 M14 11 L17 11 M23 11 L26 11" stroke="#b8431e" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="brand-word">bid<span class="smith">smith</span></span>
         </a>
         <nav class="nav-links">
+          <a href="#why">Why</a>
           <a href="#how">How</a>
-          <a href="#why">Why now</a>
-          <a href="#waitlist">Waitlist</a>
         </nav>
       </header>
 
+      <!-- ============= HERO ============= -->
       <section class="hero">
-        <div class="eyebrow">For Upwork pros — early access</div>
-        <h1>
-          Stop sending <span class="strike">AI cover letters</span>.
-          Send <span class="accent">the actual work</span>.
-        </h1>
-        <p class="lede">
-          Bidsmith reads the job post and builds the artifact — a working demo, a 90-second
-          Loom, a written spec — then attaches it to your proposal. Clients see the deliverable
-          before they hire, not after.
-        </p>
-        <div class="actions">
-          <a class="btn" href="#waitlist">Join the waitlist</a>
-          <a class="btn secondary" href="#how">See how it works</a>
+        <div class="hero-text">
+          <h1 class="display">
+            Send the work,<br />
+            not the <span class="strike">promise</span>.
+          </h1>
+          <ul class="proof-list" aria-label="What Bidsmith does">
+            <li>Job post</li>
+            <li>10-20 min agent run</li>
+            <li>Finished artifact attached</li>
+          </ul>
+          <form class="contact-form" id="contact-form">
+            <div class="contact-row">
+              <input id="contact-email" name="email" type="email" required placeholder="you@domain.com" autocomplete="email" />
+              <button class="btn accent" type="submit">Send</button>
+            </div>
+            <div class="micro" id="contact-note" style="margin-top: 12px;">For freelancers who already spend real money on connects.</div>
+          </form>
         </div>
 
-        <div class="compare" aria-hidden="true">
-          <div class="card bad">
-            <span class="tag">every other tool</span>
-            <h3>Proposal #27 of 39</h3>
-            <div class="body"></div>
-            <div class="attach">
-              <span class="chip">cover letter</span>
+        <!-- proposal pile visualization -->
+        <div class="stack-frame" aria-hidden="true">
+          <div class="pile">
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln m"></div><div class="ln s"></div></div><div class="meta">02:14</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln l"></div><div class="ln m"></div></div><div class="meta">02:16</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln m"></div><div class="ln s"></div></div><div class="meta">02:17</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln l"></div><div class="ln s"></div></div><div class="meta">02:21</div></div>
+            <div class="pile-card lit">
+              <div class="av"></div>
+              <div class="lines">
+                <div class="ln l"></div>
+                <div class="ln m"></div>
+                <div class="chips">
+                  <span class="chip-mini">artifact</span>
+                  <span class="chip-mini">proof</span>
+                  <span class="chip-mini">first pass</span>
+                </div>
+              </div>
+              <div class="meta">
+                <span>02:23</span>
+                <span class="stack-arrow">opened</span>
+              </div>
             </div>
-          </div>
-          <div class="card good">
-            <span class="tag">bidsmith</span>
-            <h3>Proposal #4 of 39</h3>
-            <div class="body"></div>
-            <div class="attach">
-              <span class="chip live">demo.loom.com</span>
-              <span class="chip live">scraper.py</span>
-              <span class="chip live">spec.pdf</span>
-            </div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln m"></div><div class="ln s"></div></div><div class="meta">02:24</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln l"></div><div class="ln m"></div></div><div class="meta">02:31</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln s"></div><div class="ln m"></div></div><div class="meta">02:35</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln m"></div><div class="ln s"></div></div><div class="meta">02:38</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln l"></div><div class="ln s"></div></div><div class="meta">02:42</div></div>
+            <div class="pile-card"><div class="av"></div><div class="lines"><div class="ln m"></div><div class="ln m"></div></div><div class="meta">02:48</div></div>
           </div>
         </div>
       </section>
 
+      <!-- ============= WHY ============= -->
       <section id="why" class="section">
-        <h2>The cover-letter race is over.</h2>
+        <div class="kicker">why this works</div>
+        <h2>A proposal should prove, not promise.</h2>
         <p>
-          Reply rates on Upwork dropped from ~4% to ~2% as every freelancer started pasting
-          ChatGPT into the proposal box. Clients now scroll past the paragraphs. They open the
-          proposals that look <em>different</em>.
+          Most bids say "I can do this" and ask the client to imagine the rest.
+          Bidsmith changes the shape of the bid: the first thing they see is work
+          already done for their brief.
         </p>
 
-        <div class="stat-row">
-          <div class="stat">
-            <div class="num">2%</div>
-            <div class="lbl">Reply rate after AI flooded proposals (was ~4% in 2023)</div>
+        <div class="vs">
+          <div class="vs-head">
+            <div>usual bid</div>
+            <div>Bidsmith</div>
           </div>
-          <div class="stat">
-            <div class="num">39</div>
-            <div class="lbl">Average proposals per popular job — yours is buried</div>
+          <div class="vs-row">
+            <div class="them">I have experience doing this kind of thing.</div>
+            <div class="us"><strong>I made the first version</strong> for this exact brief.</div>
           </div>
-          <div class="stat">
-            <div class="num">$0.15</div>
-            <div class="lbl">Per connect. A bad proposal still costs you $1.50–$6</div>
+          <div class="vs-row">
+            <div class="them">Please trust that I understand the job.</div>
+            <div class="us">Open the artifact and inspect the thinking.</div>
           </div>
-        </div>
-
-        <div class="quote">
-          <p>"Dozens of proposals, zero hires. The result of using UMA AI? Zero replies. Barely a response."</p>
-          <cite>— Freelancer's Hub, Medium</cite>
-        </div>
-        <div class="quote">
-          <p>"The winning proposal was overwhelmingly human. They told me <em>how</em> they'd solve the problem, not how qualified they were."</p>
-          <cite>— Client, The Freelance Balance</cite>
+          <div class="vs-row">
+            <div class="them">More bids, faster.</div>
+            <div class="us">Fewer bids, each with <strong>proof of work</strong>.</div>
+          </div>
         </div>
       </section>
 
+      <!-- ============= ARTIFACTS ============= -->
       <section id="how" class="section">
-        <h2>What Bidsmith does instead.</h2>
+        <div class="kicker">what gets attached</div>
+        <h2>Real artifacts. Not <em>another paragraph</em>.</h2>
         <p>
-          You point Bidsmith at a job. It reads the post, picks the right kind of proof, builds
-          it, and gives you a proposal you can send in one click.
+          One narrow agent run turns the post into the smallest useful deliverable:
+          enough to show judgment, not pretend the whole project is done.
         </p>
 
         <div class="flow">
           <div class="step">
+            <div class="num">01</div>
             <h4>Read the post</h4>
-            <p>Parses the brief, the client's history, and what the top 3 hires on this client looked like.</p>
+            <p>Brief. Constraints. What proof would make the client believe.</p>
           </div>
           <div class="step">
-            <h4>Pick the proof</h4>
-            <p>Code task → working prototype. Design → concept frame. Strategy → 1-pager.</p>
+            <div class="num">02</div>
+            <h4>Run the agent</h4>
+            <p>10-20 minutes of autonomous work focused on the deliverable.</p>
           </div>
           <div class="step">
-            <h4>Build it</h4>
-            <p>Spins up a sandbox, ships a real artifact in 2–6 minutes. Loom voiceover optional.</p>
+            <div class="num">03</div>
+            <h4>Make the artifact</h4>
+            <p>Prototype, concept frame, short analysis, script, or spec.</p>
           </div>
           <div class="step">
-            <h4>You hit send</h4>
-            <p>You review. You edit the tone. You send. Bidsmith never auto-submits.</p>
-          </div>
-        </div>
-
-        <div class="vs">
-          <div class="vs-row">
-            <div class="them">Proposal Genie / Upwex / Vollna sell <em>more</em> proposals per month.</div>
-            <div class="us">Bidsmith sells <em>one proposal</em> that includes a $200 deliverable for $0.15 of connects.</div>
-          </div>
-          <div class="vs-row">
-            <div class="them">Auto-bidders fire 50/day, get the same 2% reply rate at scale.</div>
-            <div class="us">Targeted: 5 bids a day, each with proof of work attached.</div>
-          </div>
-          <div class="vs-row">
-            <div class="them">"Personalized" cover letters that ChatGPT detectors flag in 4 lines.</div>
-            <div class="us">An artifact a human had to actually build. The detector is the client opening it.</div>
+            <div class="num">04</div>
+            <h4>Center the bid</h4>
+            <p>The proposal points to work already done before any commitment.</p>
           </div>
         </div>
       </section>
 
-      <section id="waitlist" class="cta">
-        <h2>Closed beta. ~30 freelancers.</h2>
-        <p>
-          We're picking 30 Upwork pros to use Bidsmith on real proposals over 4 weeks. If you
-          spend &gt; $100/month on connects and want artifact-driven proposals, drop your email
-          or DM <a href="https://x.com/KushalSM5" style="color: var(--paper); text-decoration: underline;">@KushalSM5</a>.
-        </p>
-        <form class="contact-form" id="contact-form">
-          <div class="contact-row">
-            <input id="contact-email" name="email" type="email" required placeholder="you@upwork.com" autocomplete="email" />
-            <button class="btn" type="submit">Contact me</button>
-          </div>
-          <div class="micro" id="contact-note" style="margin-top: 14px;">No credit card. No "be the first" countdown. We're picking based on volume + niche fit.</div>
-        </form>
-      </section>
-
+      <!-- ============= FOOTER ============= -->
       <footer class="footer">
-        <div>Bidsmith · built by <a href="https://x.com/KushalSM5">@KushalSM5</a></div>
-        <div><a href="mailto:kushalsokke@gmail.com">kushalsokke@gmail.com</a></div>
+        <div><a href="https://kushalsm.com">kushalsm.com</a></div>
       </footer>
     </div>
+
     <script>
       const CONTACT_URL = "https://script.google.com/macros/s/AKfycbx09f-4aNddxzmVVUStNJwjzVip5u3PqVYN7GSgO83FDz5DqYLEFqy4ysARdZ6oeDo8rA/exec";
       const PRODUCT = "bidsmith";
@@ -425,7 +627,7 @@
         } catch (err) {
           btn.disabled = false;
           btn.textContent = original;
-          cNote.textContent = "Send failed. Email kushalsokke@gmail.com instead.";
+          cNote.textContent = "Send failed. Try again or use kushalsm.com.";
         }
       });
     </script>
